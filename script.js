@@ -4,6 +4,7 @@ const APP = {
         APP.loadData();
         APP.addListeners();
         APP.rebuildTable();
+        APP.initDrawer();
     },
     addListeners() {
         const form = document.querySelector('form');
@@ -155,6 +156,41 @@ const APP = {
     getFieldName(colIndex) {
         const fieldNames = ['fname', 'lname', 'email', 'id'];
         return fieldNames[colIndex] || '';
+    },
+    initDrawer() {
+        const drawerToggle = document.getElementById('drawerToggle');
+        const sideDrawer = document.getElementById('sideDrawer');
+        const contentArea = document.getElementById('contentArea');
+        
+        let isDrawerOpen = false;
+        
+        drawerToggle.addEventListener('click', () => {
+            isDrawerOpen = !isDrawerOpen;
+            
+            if (isDrawerOpen) {
+                sideDrawer.classList.add('open');
+                contentArea.classList.add('drawer-open');
+                drawerToggle.classList.add('drawer-open');
+            } else {
+                sideDrawer.classList.remove('open');
+                contentArea.classList.remove('drawer-open');
+                drawerToggle.classList.remove('drawer-open');
+            }
+        });
+        
+        // Close drawer when clicking outside of it
+        document.addEventListener('click', (e) => {
+            if (isDrawerOpen && 
+                !sideDrawer.contains(e.target) && 
+                !drawerToggle.contains(e.target)) {
+                isDrawerOpen = false;
+                sideDrawer.classList.remove('open');
+                contentArea.classList.remove('drawer-open');
+                drawerToggle.classList.remove('drawer-open');
+            }
+        });
+        
+        console.log('Drawer functionality initialized');
     },
 }
 
