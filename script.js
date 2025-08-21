@@ -1,10 +1,13 @@
 const APP = {
     data: [],
+    updateTimeout: null,
+    sortableInstance: null,
     init() {
         APP.loadData();
         APP.addListeners();
         APP.rebuildTable();
         APP.initDrawer();
+        APP.initSortable();
     },
     addListeners() {
         const form = document.querySelector('form');
@@ -41,16 +44,24 @@ const APP = {
     buildRow (formData) {
         const tbody = document.querySelector('table > tbody')
         const tr = document.createElement('tr');
-        tr.innerHTML = ''
         tr.setAttribute('data-row', document.querySelectorAll('tbody tr').length)
+        
+        // Add drag handle as first column
+        let innerHTML = `<td class="sortable-handle" style="text-align: center; cursor: grab;">⋮⋮</td>`;
+        
         let col = 0;
         for(let entry of formData.entries()) {
-            tr.innerHTML += `<td data-col=${col} data-name="${entry[0]}">
-            ${entry[1]}
-            </>`
+            innerHTML += `<td data-col=${col} data-name="${entry[0]}">${entry[1]}</td>`;
             col++;
         }
-        tbody.append(tr)
+        
+        tr.innerHTML = innerHTML;
+        tbody.append(tr);
+        
+        // Update drag handlers for all rows including the new one
+        if (APP.updateRowDragHandlers) {
+            APP.updateRowDragHandlers();
+        }
     },
     exportCSV() {
         APP.data.unshift(['First Name', 'Last Name', 'Email', 'Id']);
@@ -131,12 +142,12 @@ const APP = {
         tbody.innerHTML = ''; // Clear existing rows
         
         if (APP.data.length > 0) {
-         
-            
             APP.data.forEach((rowData, index) => {
                 const tr = document.createElement('tr');
                 tr.setAttribute('data-row', index);
-                let innerHTML = '';
+                
+                // Add drag handle as first column
+                let innerHTML = `<td class="sortable-handle" style="text-align: center; cursor: grab;">⋮⋮</td>`;
                 
                 rowData.forEach((cellData, colIndex) => {
                     innerHTML += `<td data-col=${colIndex} data-name="${APP.getFieldName(colIndex)}">${cellData}</td>`;
@@ -148,6 +159,11 @@ const APP = {
 
             document.querySelector('.table-wrapper').classList.remove('hidden');
             document.querySelector('.table-wrapper').classList.add('visible');
+            
+            // Initialize drag handlers for rebuilt rows
+            if (APP.updateRowDragHandlers) {
+                APP.updateRowDragHandlers();
+            }
 
         } else {
             document.querySelector('.table-wrapper').classList.add('hidden');
@@ -191,6 +207,138 @@ const APP = {
         });
         
         console.log('Drawer functionality initialized');
+    },
+    initSortable() {
+        const tbody = document.querySelector('table tbody');
+        
+        if (!tbody) {
+            console.warn('Table tbody not found');
+            return;
+        }
+
+        // Use native HTML5 drag and drop instead of Shopify Draggable
+        APP.makeRowsSortable(tbody);
+        console.log('Native sortable functionality initialized');
+    },
+    makeRowsSortable(tbody) {
+        let draggedRow = null;
+
+        // Add drag functionality to all current and future rows
+        const updateRowDragHandlers = () => {
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows.forEach((row, index) => {
+                // Make row draggable
+                row.draggable = true;
+                row.setAttribute('data-row', index);
+                
+                // Remove existing listeners to prevent duplicates
+                row.removeEventListener('dragstart', handleDragStart);
+                row.removeEventListener('dragover', handleDragOver);
+                row.removeEventListener('drop', handleDrop);
+                row.removeEventListener('dragend', handleDragEnd);
+                
+                // Add event listeners
+                row.addEventListener('dragstart', handleDragStart);
+                row.addEventListener('dragover', handleDragOver);
+                row.addEventListener('drop', handleDrop);
+                row.addEventListener('dragend', handleDragEnd);
+            });
+        };
+
+        function handleDragStart(e) {
+            draggedRow = this;
+            this.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+
+            if (draggedRow !== this) {
+                const allRows = Array.from(tbody.querySelectorAll('tr'));
+                const draggedIndex = allRows.indexOf(draggedRow);
+                const targetIndex = allRows.indexOf(this);
+
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedRow, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedRow, this);
+                }
+
+                // Update data order after successful drop
+                APP.updateDataOrder();
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '';
+            draggedRow = null;
+        }
+
+        // Initialize for existing rows
+        updateRowDragHandlers();
+
+        // Store the update function so we can call it when new rows are added
+        APP.updateRowDragHandlers = updateRowDragHandlers;
+    },
+    updateDataOrder() {
+        // Debounce to prevent multiple rapid calls
+        clearTimeout(APP.updateTimeout);
+        APP.updateTimeout = setTimeout(() => {
+            console.log('Updating data order...');
+            
+            // Get the current order of rows in the DOM
+            const rows = document.querySelectorAll('table tbody tr');
+            const newDataSet = new Set();
+            const newData = [];
+            
+            rows.forEach((row, index) => {
+                // Extract data from the actual table cells (skip the first cell which is the drag handle)
+                const cells = row.querySelectorAll('td[data-col]');
+                const rowData = [];
+                
+                cells.forEach(cell => {
+                    rowData.push(cell.textContent.trim());
+                });
+                
+                if (rowData.length > 0) {
+                    // Create a unique key for this row to check for duplicates
+                    const rowKey = rowData.join('|');
+                    
+                    if (!newDataSet.has(rowKey)) {
+                        newDataSet.add(rowKey);
+                        newData.push(rowData);
+                    }
+                }
+                
+                // Update the row index to match new position
+                row.setAttribute('data-row', index);
+            });
+            
+            // Only update if we have the right number of unique rows
+            if (newData.length === rows.length) {
+                APP.data = newData;
+                APP.saveToStorage();
+                console.log('Data successfully reordered:', APP.data);
+                console.table(APP.data);
+            } else {
+                console.warn('Row count mismatch, rebuilding table instead');
+                APP.rebuildTable();
+            }
+        }, 100); // 100ms debounce
     },
 }
 

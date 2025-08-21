@@ -109,7 +109,7 @@
             right: 0;
             bottom: 0;
             /* background-image: linear-gradient(rgba(32,32,32,1),rgba(32,32,32,0.8)), url('./cat-pop-art.jpg'); */
-            background-image: url('./cat-pop-art-3.jpg');
+            background-image: url('./cat-pop-art-2.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: right;
@@ -159,7 +159,7 @@
             color:teal;
             border-bottom: 1px solid #ccc;
             text-align: left;
-            padding:10px;
+            padding:10px 20px;
             font-weight: 400;
             font-size: 1rem;
             letter-spacing: 0px;
@@ -194,11 +194,42 @@
 
         tbody > tr {
             border-bottom: 1px solid #eee;
+            cursor: grab;
+            transition: all 0.2s ease;
         }
 
         tbody > tr:nth-child(odd) {
             background: #fafafa;
+        }
 
+        /* Native drag and drop styles */
+        tbody > tr:hover {
+            background: #e8f4fd !important;
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        tbody > tr[draggable="true"]:active {
+            cursor: grabbing;
+        }
+
+        tbody > tr.drag-over {
+            border-top: 3px solid teal;
+        }
+
+        .sortable-handle {
+            cursor: grab;
+            color: #999;
+            padding-right: 10px;
+            user-select: none;
+        }
+
+        .sortable-handle:hover {
+            color: teal;
+        }
+
+        .sortable-handle:active {
+            cursor: grabbing;
         }
 
         .name {
@@ -389,6 +420,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th style="width: 40px; text-align: center;">⋮⋮</th>
                             <th>First Name</th>
                             <th>Last Name</th>
                             <th>Email</th>
