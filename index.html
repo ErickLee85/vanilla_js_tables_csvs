@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Playground!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <style>
+        * {
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family: 'Inter', sans-serif;
+        }
+        main {
+            min-height: 100vh;
+            min-width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 50px;
+            position: relative;
+        }
+        main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(rgba(32,32,32,1),rgba(32,32,32,0.8)), url('./isuzu-mtn.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            filter: grayscale(100%);
+            z-index: -1;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color:white;
+        }
+       .table-wrapper {
+            width:100%;
+            overflow-x: auto;
+            border: 1px solid #ccc;
+            background: #ffffff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            max-width: 800px;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+        .table-wrapper.hidden {
+            display: none;
+        }
+        .table-wrapper.visible {
+            display: block;
+            animation:animate-in 500ms linear forwards;
+        }
+
+        @keyframes animate-in {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            } to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        table {
+            width:100%;
+            border-collapse: collapse;
+            background:#f0f0f0;
+            height:auto;
+            transition:all 300ms ease-in-out;
+        }
+
+        .info {
+            background:#ffffff;
+            color:teal;
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+            padding:10px;
+            font-weight: 400;
+            font-size: 1rem;
+            letter-spacing: 0px;
+            width:100%;
+            display:flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info svg {
+            margin-right: 30px;
+            cursor: pointer;
+        }
+
+        table caption svg {
+            margin-right: 5px;
+        }
+
+        th {
+            padding:20px;
+            background: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+            letter-spacing: 1px;
+            text-align: left;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        td {
+            padding:20px;
+            border:1px solid #c0c0c0;
+        }
+
+        tbody > tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        tbody > tr:nth-child(odd) {
+            background: #fafafa;
+
+        }
+
+        .name {
+            color:rgb(6, 77, 255);
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        .actions {
+            margin-top: 10px;
+        }
+
+        .actions button {
+            padding:10px 15px;
+            background:teal;
+            color:white;
+            text-transform: uppercase;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex:1;
+        }
+
+        form {
+            width:100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-direction: column;
+            max-width:450px;
+            padding:40px;
+            gap: 10px;
+            border:1px solid gray;
+            background:rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+            box-shadow: 0  0 55px rgba(0,0,0,0.8);
+            border-radius: 30px;
+        }
+        form p {
+            display: flex;
+            flex-direction: column;
+            width:100%;
+        }
+        label {
+            color:white;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        input {
+            padding:10px;
+            margin-top: 10px;
+        }
+        td:first-child {
+            color:teal;
+            font-weight: 600;
+        }
+        .actions {
+            width:100%;
+            display: flex;
+            justify-content: flex-end;
+            gap:10px;
+        }
+
+    </style>
+    <main>
+        <h1>Javascript Playground { Tables }</h1>
+ 
+        <form action="">
+            <p>
+                <label for="fname" class="mb">First Name</label>
+                <input type="text" id="fname" name="fname" value="">
+            </p>
+             <p>
+                <label for="lname">Last Name</label>
+                <input type="text" id="lname" name="lname" value="">
+            </p>
+             <p>
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" value="">
+            </p>
+             <p>
+                <label for="id">ID</label>
+                <input type="text" id="id" name="id" value="" >
+            </p>
+        <div class="actions">
+            <button id="addUser" type="submit">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M500-482q29-32 44.5-73t15.5-85q0-44-15.5-85T500-798q60 8 100 53t40 105q0 60-40 105t-100 53Zm220 322v-120q0-36-16-68.5T662-406q51 18 94.5 46.5T800-280v120h-80Zm80-280v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80Zm-480-40q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM0-160v-112q0-34 17.5-62.5T64-378q62-31 126-46.5T320-440q66 0 130 15.5T576-378q29 15 46.5 43.5T640-272v112H0Zm320-400q33 0 56.5-23.5T400-640q0-33-23.5-56.5T320-720q-33 0-56.5 23.5T240-640q0 33 23.5 56.5T320-560ZM80-240h480v-32q0-11-5.5-20T540-306q-54-27-109-40.5T320-360q-56 0-111 13.5T100-306q-9 5-14.5 14T80-272v32Zm240-400Zm0 400Z"/></svg>
+                Add User
+            </button>
+            <button id="exportCSV">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M480-480ZM202-65l-56-57 118-118h-90v-80h226v226h-80v-89L202-65Zm278-15v-80h240v-440H520v-200H240v400h-80v-400q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H480Z"/></svg>                Export to CSV
+            </button>
+        </div>
+        </form>
+       <div class="table-wrapper">
+        <div class="info">
+                Add Users, Export to CSV & Edit by Double Click
+              <svg id="resetStorage" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M446-446Zm106-95Zm-106 95Zm106-95Zm-106 95Zm106-95ZM791-56 56-791l56-57 736 736-57 56Zm-311-64q-151 0-255.5-46.5T120-280v-400q0-26 17.5-49.5T187-773l252 252q-72-3-133-18t-106-40v120q51 29 123 44t157 15q20 0 39-.5t38-2.5l70 70q-34 7-71 10t-76 3q-85 0-157-15t-123-44v99q9 29 97.5 54.5T480-200q64 0 128.5-13T715-245l58 58q-49 31-125.5 49T480-120Zm350-123-70-70v-66q-11 6-22 11t-23 10l-61-61q30-8 56.5-17.5T760-459v-120q-41 23-94 37t-116 19l-76-76q44 0 92-7t89.5-18.5q41.5-11.5 70-26T760-679q-11-29-100.5-55T480-760q-37 0-75.5 5T331-742l-66-66q45-15 100-23.5t115-8.5q149 0 254.5 47T840-680v400q0 10-2.5 19t-7.5 18Z"/></svg>
+
+        </div>
+         <table>
+
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Id</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+       </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
