@@ -7,6 +7,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <!-- Entire bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>
+    <!-- legacy bundle for older browsers (IE11) -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.legacy.js"></script>
+    <!-- Draggable only -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.js"></script>
+    <!-- Sortable only -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/sortable.js"></script>
+    <!-- Droppable only -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/droppable.js"></script>
+    <!-- Swappable only -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/swappable.js"></script>
+    <!-- Plugins only -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/plugins.js"></script>
 </head>
 <body>
     <style>
@@ -34,12 +48,10 @@
             right: 0;
             bottom: 0;
             /* background-image: linear-gradient(rgba(32,32,32,1),rgba(32,32,32,0.8)), url('./cat-pop-art.jpg'); */
-            background-image: url('./cat-pop-art.jpg');
+            background-image: url('./cat-pop-art-2.jpg');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: right;
-            /* filter: grayscale(100%);
-            z-index: -1; */
         }
         h1 {
             font-size: 2.5rem;
@@ -194,6 +206,80 @@
             gap:10px;
         }
 
+        .modal-overlay {
+            inset:0;
+            height: 100vh;
+            width: 100vw;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background:rgba(0,0,0,0.5);
+            z-index: 100;
+            position: absolute;
+            backdrop-filter: blur(10px);
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-prompt {
+            background:rgba(255,255,255,1);
+            transform: translateY(100px);
+            opacity: 0;
+            animation: show-prompt 200ms linear forwards;
+        }
+
+        @keyframes show-prompt {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            } to {
+                transform: translateY(0px);
+                opacity: 1;
+            }
+        }
+
+        .header {
+            background:rgba(253, 133, 133, 0.2);
+            color: rgb(255, 97, 97);
+            padding:20px;
+            border-bottom: 1px solid gainsboro;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .body {
+            padding:50px 20px;
+        }
+        .footer {
+            border-top: 1px solid gainsboro;
+            margin-top: 25px;
+            padding:20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background:#f8f8f8;
+        }
+
+        .footer button {
+            padding:10px 15px;
+        }
+
+        .footer button:nth-child(2) {
+            background: red;
+            color: white;
+            font-weight: 800;
+            text-transform: uppercase;
+            border:none;
+            outline: none;
+        }
+
+        .header svg {
+            cursor: pointer;
+        }
+        #delete-btn {
+            cursor: pointer;
+        }
     </style>
     <main>
         <h1>Javascript Playground { Tables }</h1>
@@ -201,15 +287,15 @@
         <form action="">
             <p>
                 <label for="fname" class="mb">First Name</label>
-                <input type="text" id="fname" name="fname" value="">
+                <input type="text" id="fname" name="fname" value="" required>
             </p>
              <p>
                 <label for="lname">Last Name</label>
-                <input type="text" id="lname" name="lname" value="">
+                <input type="text" id="lname" name="lname" value="" required>
             </p>
              <p>
                 <label for="email">Email</label>
-                <input type="text" id="email" name="email" value="">
+                <input type="text" id="email" name="email" value="" required>
             </p>
              <p>
                 <label for="id">ID</label>
@@ -228,7 +314,7 @@
        <div class="table-wrapper">
         <div class="info">
                 Add Users, Export to CSV & Edit by Double Click
-              <svg id="resetStorage" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1f1f1f"><path d="M446-446Zm106-95Zm-106 95Zm106-95Zm-106 95Zm106-95ZM791-56 56-791l56-57 736 736-57 56Zm-311-64q-151 0-255.5-46.5T120-280v-400q0-26 17.5-49.5T187-773l252 252q-72-3-133-18t-106-40v120q51 29 123 44t157 15q20 0 39-.5t38-2.5l70 70q-34 7-71 10t-76 3q-85 0-157-15t-123-44v99q9 29 97.5 54.5T480-200q64 0 128.5-13T715-245l58 58q-49 31-125.5 49T480-120Zm350-123-70-70v-66q-11 6-22 11t-23 10l-61-61q30-8 56.5-17.5T760-459v-120q-41 23-94 37t-116 19l-76-76q44 0 92-7t89.5-18.5q41.5-11.5 70-26T760-679q-11-29-100.5-55T480-760q-37 0-75.5 5T331-742l-66-66q45-15 100-23.5t115-8.5q149 0 254.5 47T840-680v400q0 10-2.5 19t-7.5 18Z"/></svg>
+              <svg id="resetStorage" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="rgb(255,97,97)"><path d="M446-446Zm106-95Zm-106 95Zm106-95Zm-106 95Zm106-95ZM791-56 56-791l56-57 736 736-57 56Zm-311-64q-151 0-255.5-46.5T120-280v-400q0-26 17.5-49.5T187-773l252 252q-72-3-133-18t-106-40v120q51 29 123 44t157 15q20 0 39-.5t38-2.5l70 70q-34 7-71 10t-76 3q-85 0-157-15t-123-44v99q9 29 97.5 54.5T480-200q64 0 128.5-13T715-245l58 58q-49 31-125.5 49T480-120Zm350-123-70-70v-66q-11 6-22 11t-23 10l-61-61q30-8 56.5-17.5T760-459v-120q-41 23-94 37t-116 19l-76-76q44 0 92-7t89.5-18.5q41.5-11.5 70-26T760-679q-11-29-100.5-55T480-760q-37 0-75.5 5T331-742l-66-66q45-15 100-23.5t115-8.5q149 0 254.5 47T840-680v400q0 10-2.5 19t-7.5 18Z"/></svg>
 
         </div>
          <table>
@@ -247,6 +333,26 @@
         </table>
        </div>
     </main>
+
+   <div class="modal-overlay">
+     <div class="modal-prompt">
+        <div class="header">
+            <h2>Remove Table Data</h2>
+<svg class="cancel-btn" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="rgb(255,97,97)"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+        </div>
+       <div class="body">
+         <p>Are you sure you want to remove all table data? This can not be recovered.</p>
+       </div>
+        <div class="footer">
+            <button class="cancel-btn">
+                Cancel
+            </button>
+            <button id="delete-btn">
+                Delete
+            </button>
+        </div>
+    </div>
+   </div>
     <script src="script.js"></script>
 </body>
 </html>

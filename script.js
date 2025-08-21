@@ -11,6 +11,10 @@ const APP = {
         document.getElementById('exportCSV').addEventListener('click', APP.exportCSV);
         document.querySelector('table tbody').addEventListener('dblclick', APP.editCell);
         document.getElementById('resetStorage').addEventListener('click', APP.resetStorage)
+        document.querySelectorAll('.cancel-btn').forEach((btn) => {
+            btn.addEventListener('click', APP.cancelModal)
+        })
+        document.getElementById('delete-btn').addEventListener('click', APP.deleteData)
         if(APP.data.length === 0) {
             console.log('app data empty')
             document.querySelector('.table-wrapper').classList.add('hidden')
@@ -91,12 +95,22 @@ const APP = {
         localStorage.setItem('tableData', JSON.stringify(APP.data));
     },
      resetStorage () {
-        if(window.confirm("Clear Table Data?")) {
-            localStorage.clear();
-            APP.cleanTable();
-        } else {
-            console.log('User canceled.')
-        }
+        let overlay = document.querySelector('.modal-overlay')
+        overlay.classList.add('active')
+        // if(window.confirm("Clear Table Data?")) {
+        //     localStorage.clear();
+        //     APP.cleanTable();
+        // } else {
+        //     console.log('User canceled.')
+        // }
+    },
+    deleteData() {
+        localStorage.clear();
+        APP.cleanTable();
+        APP.cancelModal();
+    },
+    cancelModal() {
+        document.querySelector('.modal-overlay').classList.remove('active')
     },
     cleanTable() {
         // Clear the data array
